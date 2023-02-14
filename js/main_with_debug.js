@@ -122,13 +122,43 @@ function cities(){
     mydiv.appendChild(table);
 };
 
-//initialize function called when script loads
-function initialize(){
-    cities(); //Runs cities function to organize pre-existing city data
-	addColumns(cityPop); //Runs addColumns function to add a new city size column, creates data from pre-existing data.
-	addEvents(); //Runs addEvents function to add color changing and clicking interactive features.
+function debugCallback(response){
+	var myData = response; //Response is stored in a local variable for use in the following code.
+	
+	//Adds unfiltered and unformatted GeoJSON data to html div underneath table as a string.
+	document.querySelector("#mydiv").insertAdjacentHTML('beforeend', 'GeoJSON data: ' + JSON.stringify(myData)) 
+	
 };
 
-//When website is opened, initialize function is ran.
-window.onload = initialize(); 
+function debugAjax(){
+	
+	
+	//Fetches file from data file: GeoJSON file contains city information.
+	fetch('data/MegaCities.geojson')
+		.then(function(response){
+			return response.json();
+		}) //After fetch is performed on file, returns GeoJSON data for use.
+		.then(function(response){
+			debugCallback(response);
+			//Inputs response into debugCallback function to run code using data that is fetched from GeoJSON file.
+			
+		})
 
+	//document.querySelector("#mydiv").insertAdjacentHTML('beforeend', '<br>GeoJSON data:<br>' + JSON.stringify(myData))
+	//document.querySelector("#mydiv").insertAdjacentHTML('beforeend', 'GeoJSON data: ' + JSON.stringify(myData))
+	
+};
+
+
+//initialize function called when script loads
+function initialize(){ 
+	cities(); //Runs cities function to organize pre-existing city data
+	addColumns(cityPop); //Runs addColumns function to add a new city size column, creates data from pre-existing data.
+	addEvents(); //Runs addEvents function to add color changing and clicking interactive features.
+	debugAjax(); //Runs debugAjax function to fetch data from GeoJSON file and return it. 
+};
+
+//When website is opened, initialize function is ran. Event listener waits for file to load before performing debugAjax.
+document.addEventListener('DOMContentLoaded',debugAjax)
+
+window.onload = initialize(); 
